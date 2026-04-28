@@ -1,5 +1,10 @@
 # Agent Communication Protocol (ACP)
 
+[![Build](https://github.com/Retsumdk/agent-communication-protocol/workflows/CI/badge.svg)](https://github.com/Retsumdk/agent-communication-protocol/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 > Inter-agent message passing protocol with delivery guarantees, acknowledgment receipts, and priority queuing
 
 **Built by [Retsumdk](https://github.com/Retsumdk)**
@@ -32,11 +37,11 @@ import { AgentCommunicationProtocol } from "@retsumdk/agent-communication-protoc
 
 // Create protocol instance for your agent
 const protocol = new AgentCommunicationProtocol("my-agent-id", {
-  storePath: "./.acp-messages",  // Optional: persistence directory
-  maxRetries: 3,                  // Max delivery attempts
-  retryDelayMs: 1000,             // Base retry delay
-  ackTimeoutMs: 30000,            // Acknowledgment timeout
-  maxConcurrentDeliveries: 10,   // Parallel deliveries
+  storePath: "./.acp-messages", // Optional: persistence directory
+  maxRetries: 3,                // Max delivery attempts
+  retryDelayMs: 1000,           // Base retry delay
+  ackTimeoutMs: 30000,           // Acknowledgment timeout
+  maxConcurrentDeliveries: 10,  // Parallel deliveries
 });
 
 // Start the protocol
@@ -72,10 +77,12 @@ new AgentCommunicationProtocol(localAgentId: string, config?: ProtocolConfig)
 ```
 
 **Parameters:**
+
 - `localAgentId` — Unique identifier for this agent
 - `config` — Optional configuration object
 
 **Config Options:**
+
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `storePath` | `string` | `./.acp-messages` | Message persistence directory |
@@ -111,13 +118,13 @@ async send(
   to: AgentAddress,
   payload: unknown,
   options?: {
-    priority?: MessagePriority;  // "critical" | "high" | "normal" | "low"
-    expiresAt?: number;          // Unix timestamp
-    correlationId?: string;      // For correlating request/response
+    priority?: MessagePriority; // "critical" | "high" | "normal" | "low"
+    expiresAt?: number;         // Unix timestamp
+    correlationId?: string;     // For correlating request/response
     headers?: Record<string, string>;
     onAcknowledged?: (ack: Acknowledgment) => void;
   }
-): Promise<string>  // Returns messageId
+): Promise<string> // Returns messageId
 ```
 
 ##### `sendBatch(messages)`
@@ -221,19 +228,18 @@ bun run acp stats
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    AgentCommunicationProtocol                    │
+│                   AgentCommunicationProtocol                    │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐   │
-│  │ MessageStore │───▶│ DeliveryAgent│───▶│ AcknowledgmentMgr │   │
-│  └──────────────┘    └──────────────┘    └──────────────────┘   │
-│         │                   │                      │             │
-│         │                   │                      │             │
-│         ▼                   ▼                      ▼             │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐   │
-│  │ PriorityQueue│    │ MessageQueue │    │ PendingAcks Map  │   │
-│  └──────────────┘    └──────────────┘    └──────────────────┘   │
-│                                                                  │
+│                              │                                 │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐  │
+│  │ MessageStore │───▶│ DeliveryAgent│───▶│AcknowledgmentMgr │  │
+│  └──────────────┘    └──────────────┘    └──────────────────┘  │
+│         │                   │                     │             │
+│         ▼                   ▼                     ▼             │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐  │
+│  │PriorityQueue │    │ MessageQueue │    │  PendingAcks Map │  │
+│  └──────────────┘    └──────────────┘    └──────────────────┘  │
+│                                                                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -271,6 +277,15 @@ bun run acp stats
 - **Ordered by Priority** — Critical messages are always processed first
 - **Persistent** — Messages survive protocol restarts
 - **Timeout Handling** — Unacknowledged messages expire after configurable timeout
+
+## 🔗 Related Repos
+
+| Project | Description |
+|---------|-------------|
+| [agent-task-orchestrator](https://github.com/Retsumdk/agent-task-orchestrator) | Multi-agent workflow orchestration engine |
+| [agent-memory-store](https://github.com/Retsumdk/agent-memory-store) | Persistent memory storage for AI agents |
+| [agent-a2a-bridge](https://github.com/Retsumdk/agent-a2a-bridge) | Production-ready A2A protocol for multi-agent systems |
+| [agent-error-handler](https://github.com/Retsumdk/agent-error-handler) | Robust error handling with circuit breakers |
 
 ## License
 
