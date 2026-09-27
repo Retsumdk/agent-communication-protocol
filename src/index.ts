@@ -101,7 +101,7 @@ function currentTimestamp(): number {
 // Priority Queue Implementation
 // ============================================================================
 
-class PriorityQueue<T> {
+export class PriorityQueue<T> {
   private items: { priority: number; data: T; timestamp: number }[] = [];
 
   enqueue(item: T, priority: MessagePriority): void {
@@ -144,7 +144,7 @@ class PriorityQueue<T> {
 // Message Store - Persistence Layer
 // ============================================================================
 
-class MessageStore {
+export class MessageStore {
   private storePath: string;
   private messages: Map<string, MessageEnvelope> = new Map();
 
@@ -237,7 +237,7 @@ class MessageStore {
 // Acknowledgment Manager
 // ============================================================================
 
-class AcknowledgmentManager extends EventEmitter {
+export class AcknowledgmentManager extends EventEmitter {
   private pendingAcks: Map<string, NodeJS.Timeout> = new Map();
   private ackCallbacks: Map<string, (ack: Acknowledgment) => void> = new Map();
   private defaultTimeout: number = 30000;
@@ -611,7 +611,12 @@ export class AgentCommunicationProtocol extends EventEmitter {
   }
 
   getPendingMessages(): MessageEnvelope[] {
-    return this.store.getAllPending();
+    // Pending messages surface in priority order (matching delivery queue
+    // semantics), with timestamp as the tie-break within a priority band.
+    const rank: Record<MessagePriority, number> = { critical: 0, high: 1, normal: 2, low: 3 };
+    return this.store.getAllPending().sort(
+      (a, b) => rank[a.message.priority] - rank[b.message.priority] || a.message.timestamp - b.message.timestamp
+    );
   }
 
   getMessageHistory(limit: number = 100): MessageEnvelope[] {

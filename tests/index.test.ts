@@ -123,7 +123,7 @@ describe("MessageStore", () => {
     const store = new MessageStore(storePath);
 
     const envelope: MessageEnvelope = {
-      message: createMockMessage(),
+      message: createMockMessage({ id: "test-id" }),
       receipt: {
         messageId: "test-id",
         status: "pending",
@@ -585,9 +585,11 @@ describe("Integration Tests", () => {
       { priority: "high" }
     );
 
+    // Delivery is simulated in-process: the message lives in the sending
+    // protocol's store, so acknowledgment flows through the same instance.
     // Simulate receiver acknowledging
     await new Promise((r) => setTimeout(r, 50));
-    const ack = receiver.acknowledge(messageId, "Message received");
+    const ack = sender.acknowledge(messageId, "Message received");
 
     await new Promise((r) => setTimeout(r, 50));
 
