@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * agent-communication-protocol - Inter-agent message passing protocol with delivery guarantees,
  * acknowledgment receipts, and priority queuing
@@ -15,6 +15,7 @@
  */
 
 import { EventEmitter } from "events";
+import { pathToFileURL } from "url";
 import { randomBytes, createHash } from "crypto";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
@@ -690,7 +691,7 @@ program
     });
     protocol.start();
 
-    protocol.on("message-acknowledged", (ack) => {
+    protocol.on("message-acknowledged", (ack: { messageId: string; latencyMs: number }) => {
       console.log(`[ACK] Message ${ack.messageId} acknowledged in ${ack.latencyMs}ms`);
     });
 
@@ -776,7 +777,7 @@ program
     console.log(`  Queue Size: ${stats.queueSize}`);
   });
 
-function loadConfigFromFile(path: string): Record<string, unknown> {
+function loadConfigFromFile(path: string): Record<string, string> {
   if (existsSync(path)) {
     try {
       return JSON.parse(readFileSync(path, "utf-8"));
@@ -791,7 +792,7 @@ function loadConfigFromFile(path: string): Record<string, unknown> {
 // Main entry point
 // ============================================================================
 
-if (require.main === module) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   program.parse(process.argv);
 }
 

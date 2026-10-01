@@ -27,8 +27,10 @@ ACP is a robust message passing system designed for AI agent networks. It provid
 ## Installation
 
 ```bash
-bun add @retsumdk/agent-communication-protocol
+npm install github:Retsumdk/agent-communication-protocol
 ```
+
+> **Using Bun?** Bun blocks a git dependency's lifecycle scripts by default. After installing, run `bun pm trust @retsumdk/agent-communication-protocol` so the `prepare` build step runs.
 
 ## Quick Start
 
