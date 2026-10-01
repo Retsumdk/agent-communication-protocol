@@ -16,6 +16,7 @@
 
 import { EventEmitter } from "events";
 import { pathToFileURL } from "url";
+import { realpathSync } from "fs";
 import { randomBytes, createHash } from "crypto";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
@@ -792,7 +793,7 @@ function loadConfigFromFile(path: string): Record<string, string> {
 // Main entry point
 // ============================================================================
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
   program.parse(process.argv);
 }
 
